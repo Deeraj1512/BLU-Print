@@ -80,6 +80,7 @@ const DEFAULT_SUBJECTS = [
     ["quiz.html", "Quiz", "📝"],
     ["errors.html", "Errors", "🐛"],
     ["mock.html", "Mocks", "🏟"],
+    ["ai.html", "AI", "🤖"],
     ["calendar.html", "Calendar", "📅"],
     ["stats.html", "Stats", "📊"],
     ["report.html", "Report", "📋"],

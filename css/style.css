@@ -1690,3 +1690,74 @@ body.navopen {
 body.navopen {
    overflow: hidden
 }
+
+/* ============================================================
+   Polish v3 — FINAL session layout. Every element is pinned to
+   its own grid lane, so every row type (study / break / meal /
+   carry-forward / calendar) aligns identically. No spacers.
+   Lane 1 = checkbox · Lane 2 = time · Lane 3 = label · Lane 4 = duration
+   ============================================================ */
+.sess {
+   display: grid !important;
+   grid-template-columns: 34px 56px 1fr 64px;
+   column-gap: 10px;
+   align-items: center;
+   padding: 11px 4px;
+   min-height: 47px;
+   border-bottom: 1px solid #dfe4ef;
+}
+
+.sess>* {
+   min-width: 0
+}
+
+.sess .box {
+   grid-column: 1;
+   grid-row: 1;
+   width: 24px;
+   height: 24px
+}
+
+.sess .t {
+   grid-column: 2;
+   grid-row: 1;
+   font-size: 12px;
+   font-weight: 700;
+   color: var(--brand);
+   font-variant-numeric: tabular-nums
+}
+
+.sess .l {
+   grid-column: 3;
+   grid-row: 1;
+   line-height: 1.45;
+   font-size: 14.5px
+}
+
+.sess .d {
+   grid-column: 4;
+   grid-row: 1;
+   font-size: 11.5px;
+   color: var(--muted);
+   text-align: right;
+   font-variant-numeric: tabular-nums
+}
+
+.sess:last-child {
+   border-bottom: none
+}
+
+.sess.meal,
+.sess.brk {
+   opacity: .62;
+   cursor: default
+}
+
+.sess .t {
+   color: var(--muted);
+   font-weight: 700
+}
+
+.sess.done .t {
+   color: var(--muted)
+}

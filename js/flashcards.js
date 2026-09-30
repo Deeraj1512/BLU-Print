@@ -14,7 +14,11 @@ function ivLabel(d) { if (d <= 0) return "today"; if (d === 1) return "1 day"; i
 
 function ensureFC() {
   if (!state.cards) state.cards = [];
-  if (!state.ai) state.ai = { key: "", model: "gemini-2.0-flash" };
+  if (!state.ai) state.ai = { key: "", model: "" };
+  state.ai.provider = state.ai.provider || "auto";
+  if (state.ai.key2 === undefined) state.ai.key2 = "";
+  if (state.ai.model2 === undefined) state.ai.model2 = "";
+  state.ai.provider2 = state.ai.provider2 || "auto";
 }
 
 /* ---------- scheduling (simplified SM-2) ----------
@@ -153,8 +157,8 @@ function parseCardList(txt) {
 
 async function doGenerate() {
   if (!state.ai.key) {
-    alert("Add your free Gemini API key first — ⚙️ AI settings at the bottom of this page.");
-    $("aiDet").open = true; return;
+    alert("No AI key yet — one-time setup on the AI page.");
+    location.href = "ai.html"; return;
   }
   const subj = $("gSubj").value, topic = $("gTopic").value.trim(), n = +$("gCount").value;
   const f = $("gFile").files[0], typed = $("gText").value.trim();
@@ -317,20 +321,29 @@ function renderStoreInfo() {
 /* ---------- AI settings ---------- */
 function aiSave() {
   state.ai.key = $("aiKey").value.trim();
-  state.ai.model = $("aiModel").value.trim() || "gemini-2.0-flash";
-  save(); $("aiStatus").textContent = "Saved ✅"; renderStoreInfo();
+  state.ai.model = $("aiModel").value.trim();
+  state.ai.provider = $("aiProv").value;
+  state.ai.key2 = $("aiKey2").value.trim();
+  state.ai.model2 = $("aiModel2").value.trim();
+  state.ai.provider2 = $("aiProv2").value;
+  save();
+  const pn = v => (v === "auto" ? "auto" : (AI_PROVIDERS[v] ? AI_PROVIDERS[v].label : v));
+  $("aiStatus").textContent = "Saved ✅ Primary: " + (state.ai.key ? pn(state.ai.provider) : "none")
+    + (state.ai.key2 ? " · Backup: " + pn(state.ai.provider2) : "");
+  renderStoreInfo();
 }
 async function aiTest() {
-  const k = $("aiKey").value.trim(), m = $("aiModel").value.trim();
-  if (!k) { $("aiStatus").textContent = "Paste the key first."; return; }
+  const k = $("aiKey").value.trim();
+  if (!k) { $("aiStatus").textContent = "Paste the primary key first."; return; }
   $("aiStatus").textContent = "Testing…";
+  const bk = state.ai.key, bm = state.ai.model, bp = state.ai.provider;
+  state.ai.key = k; state.ai.model = $("aiModel").value.trim(); state.ai.provider = $("aiProv").value;
   try {
-    const ok = state.ai.key, om = state.ai.model;
-    state.ai.key = k; state.ai.model = m;
     await aiGenerate([{ text: "Reply with just: OK" }], 0);
-    state.ai.key = ok; state.ai.model = om;
-    $("aiStatus").textContent = "Key works ✅ — provider: " + aiDetect(k);
+    const prov = (state.ai.provider !== "auto") ? state.ai.provider : aiDetect(k);
+    $("aiStatus").textContent = "Primary key works ✅ — provider: " + (AI_PROVIDERS[prov] ? AI_PROVIDERS[prov].label : prov);
   } catch (e) { $("aiStatus").textContent = "⚠ " + (e.message || e); }
+  state.ai.key = bk; state.ai.model = bm; state.ai.provider = bp;
 }
 
 /* ---------- boot ---------- */
@@ -342,8 +355,7 @@ if (needPlan()) {
     });
     const ob = document.createElement("option"); ob.value = s[0]; ob.textContent = s[0]; $("bSubj").appendChild(ob);
   });
-  $("aiKey").value = state.ai.key;
-  $("aiModel").value = state.ai.model;
+
   $("gSubj").value = "Surgery";   /* the daily priority, pre-selected */
   $("mSubj").value = "Surgery";
 
@@ -356,8 +368,6 @@ if (needPlan()) {
   $("mSave").onclick = saveManual;
   $("bSearch").oninput = renderBrowse;
   $("bSubj").onchange = renderBrowse;
-  $("aiSave").onclick = aiSave;
-  $("aiTest").onclick = aiTest;
   $("flipBtn").onclick = doFlip;
   $("quitBtn").onclick = finishStudy;
   document.querySelectorAll("#rateRow .rate").forEach(b => b.onclick = () => answer(+b.dataset.r));
@@ -370,4 +380,72 @@ if (needPlan()) {
   });
 
   renderAll();
+}
+
+/* ============================================================
+   Option 1 — topic-mode generation (appended).
+   Cards from any syllabus topic, no notes required.
+   ============================================================ */
+const PROMPT_TOPIC = 'You are an expert tutor preparing a doctor for the NEET PG exam (India). Create high-yield flashcards on the requested syllabus topic from your own medical knowledge. Rules: front = precise question/cue, back = short self-contained answer; cover drug of choice, most common cause, classic features, investigation findings, classifications, important numbers, imaging and instrument findings; include a mnemonic card where helpful; use only well-established, exam-stable facts — skip controversial or evolving management and rare trivia; max ~35 words per side; no card depends on another. Return ONLY a JSON array of objects with keys "front" and "back".';
+
+/* uses the multi-provider ai.js when installed; otherwise talks to Gemini directly */
+async function fcAI(parts, temp) {
+  if (typeof aiGenerate === "function") return aiGenerate(parts, temp);
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"
+    + (state.ai.model || "gemini-2.0-flash") + ":generateContent?key=" + encodeURIComponent(state.ai.key), {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: parts }],
+      generationConfig: { temperature: temp, responseMimeType: "application/json" }
+    })
+  });
+  const d = await res.json();
+  if (!res.ok) throw new Error((d.error && d.error.message) || ("API error " + res.status));
+  return (((d.candidates || [])[0] || { content: { parts: [] } }).content.parts || []).map(p => p.text || "").join("");
+}
+function fillCardTopics() {
+  const sel = $("tTopic"); sel.innerHTML = "";
+  const o = document.createElement("option");
+  o.value = ""; o.textContent = "Whole subject (mixed high-yield topics)";
+  sel.appendChild(o);
+  getTopics($("tSubj").value).forEach(t => {
+    const op = document.createElement("option"); op.value = t[0]; op.textContent = t[0]; sel.appendChild(op);
+  });
+}
+async function doGenerateTopic() {
+  if (!state.ai.key) {
+    alert("No AI key yet — one-time setup on the AI page.");
+    location.href = "ai.html"; return;
+  }
+  const subj = $("tSubj").value, topic = $("tTopic").value, n = +$("tCount").value;
+  $("tGenBtn").disabled = true;
+  $("tStatus").innerHTML = '<span class="spin">⏳</span> Writing ' + n + ' cards… (10–30 s)';
+  try {
+    const txt = await fcAI([{
+      text: PROMPT_TOPIC
+        + "\nSubject: " + subj + ". Topic: " + (topic || "whole subject, mixed high-yield topics") + "."
+        + "\nCreate exactly " + n + " flashcards."
+        + "\nVariation seed: " + Math.random().toString(36).slice(2, 8)
+    }], 0.4);
+    proposed = parseCardList(txt).slice(0, 40);
+    if (!proposed.length) throw new Error("The AI returned no usable cards — try again.");
+    propSubj = subj; propTopic = topic;
+    renderVerify();
+    $("tStatus").textContent = "Done! " + proposed.length + " cards proposed — review below ✅";
+    $("verifyCard").scrollIntoView({ behavior: "smooth" });
+  } catch (err) {
+    let m = err.message || String(err);
+    if (m.indexOf("Failed to fetch") >= 0) m = "Network problem — check the internet and retry.";
+    $("tStatus").textContent = "⚠ " + m;
+  }
+  $("tGenBtn").disabled = false;
+}
+if (state && state.plan) {
+  DEFAULT_SUBJECTS.forEach(s => {
+    const o = document.createElement("option"); o.value = s[0]; o.textContent = s[0]; $("tSubj").appendChild(o);
+  });
+  $("tSubj").value = "Surgery";
+  fillCardTopics();
+  $("tSubj").onchange = fillCardTopics;
+  $("tGenBtn").onclick = doGenerateTopic;
 }

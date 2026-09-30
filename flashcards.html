@@ -28,8 +28,27 @@
       <div id="overview"></div>
 
       <div class="card">
-        <h2>🪄 Import notes → make flashcards</h2>
-        <p class="mini" style="margin-top:0">1 Import → 2 AI generates → 3 she verifies → 4 spaced repetition remembers.
+        <h2>⚡ Option 1 — Generate by AI (from topic)</h2>
+        <p class="mini" style="margin-top:0">No notes needed. Pick a syllabus topic → AI writes the cards → verify →
+          done.</p>
+        <label>Subject</label>
+        <select id="tSubj"></select>
+        <label>Topic</label>
+        <select id="tTopic"></select>
+        <label>How many cards?</label>
+        <select id="tCount">
+          <option value="10">10</option>
+          <option value="15" selected>15</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+        <button class="btn" id="tGenBtn">✨ Generate from topic</button>
+        <div class="statusline" id="tStatus"></div>
+      </div>
+
+      <div class="card">
+        <h2>📄 Option 2 — Generate from notes (import)</h2>
+        <p class="mini" style="margin-top:0">Photo 📷 / PDF / pasted text of notes → AI turns that material into cards.
         </p>
         <label>Subject</label>
         <select id="gSubj"></select>
@@ -48,11 +67,12 @@
         <label>…or a file: photo of notes 📷 / PDF / .txt</label>
         <input type="file" id="gFile" accept="image/*,.pdf,.txt,.md">
         <div class="mini" id="gFileNote"></div>
-        <button class="btn" id="genBtn">✨ Generate flashcards with AI</button>
+        <button class="btn" id="genBtn">✨ Generate from notes</button>
         <div class="statusline" id="genStatus"></div>
         <p class="mini">Printed or neat handwritten photos work. Word (.docx)? Paste the text instead. Very large PDF?
           Split it.</p>
       </div>
+
 
       <div class="card hidden" id="verifyCard">
         <h2>🕵️ Verify before adding — this is revision too!</h2>
@@ -90,23 +110,13 @@
         <div id="browseList" style="margin-top:10px"></div>
       </details>
 
-      <details class="boxdet" id="aiDet">
-        <summary>⚙️ AI settings (one-time setup)</summary>
-        <p class="mini">1. Open <b>aistudio.google.com/app/apikey</b> → sign in with a Google account → <b>Create API
-            key</b> → copy it.<br>
-          2. Paste below and Save. The key lives only in her browser; requests go directly from the browser to Google.
-          The free tier is plenty for one student.</p>
-        <label>AI API key (Gemini / Groq / GitHub)</label>
-        <input id="aiKey" type="password" placeholder="paste the key here">
-        <label>Model</label>
-        <input id="aiModel" placeholder="gemini-3.8-flash">
-        <div class="tools">
-          <button class="btn small ghost" id="aiSave">Save</button>
-          <button class="btn small ghost" id="aiTest">Test key</button>
-        </div>
-        <div class="statusline" id="aiStatus"></div>
+      <div class="card">
+        <h2>🤖 AI engine</h2>
+        <p class="mini" style="margin-top:0">Keys and providers live on their own page now. If a provider is busy, the
+          app auto-switches to your backup key.</p>
+        <a class="btn ghost" style="text-decoration:none;text-align:center" href="ai.html">⚙️ Open AI settings</a>
         <div class="statusline" id="storeInfo"></div>
-      </details>
+      </div>
 
     </div>
 
@@ -133,6 +143,7 @@
   </main>
   <script src="js/core.js"></script>
   <script src="js/ai.js"></script>
+  <script src="js/topics.js"></script>
   <script src="js/flashcards.js"></script>
 </body>
 
