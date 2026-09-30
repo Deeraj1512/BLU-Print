@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mocks · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip" id="hchip"></div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html">Cards</a>
+    <a href="quiz.html">Quiz</a><a href="errors.html">Errors</a><a href="mock.html" class="active">Mocks</a><a
+      href="report.html">Report</a>
+    <a href="calendar.html">Calendar</a><a href="stats.html">Stats</a><a href="syllabus.html">Syllabus</a>
+    <a href="backup.html">Backup</a><a href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+    <div id="gmNotice"></div>
+    <div id="sumCards"></div>
+    <div id="targetCard"></div>
+
+    <div class="card mkform">
+      <h2>📝 Log a test</h2>
+      <p class="mini" style="margin-top:0">From Marrow / PrepLadder / any platform — 30 seconds after each test.</p>
+      <div class="row2">
+        <div><label>Type</label>
+          <select id="mType">
+            <option value="grand">Grand mock (full syllabus)</option>
+            <option value="subject">Subject test</option>
+          </select>
+        </div>
+        <div><label>Date</label><input type="date" id="mDate"></div>
+      </div>
+      <div id="mSubjRow" style="display:none">
+        <label>Subject</label><select id="mSubj"></select>
+      </div>
+      <div class="row2">
+        <div><label>Platform</label><input id="mPlatform" list="plList" placeholder="Marrow / PrepLadder / …">
+          <datalist id="plList">
+            <option>Marrow</option>
+            <option>PrepLadder</option>
+            <option>Other</option>
+          </datalist>
+        </div>
+        <div><label>Time taken (min, optional)</label><input type="number" id="mMins" min="0" max="600"
+            placeholder="210"></div>
+      </div>
+      <div class="row3">
+        <div><label>Total Qs</label><input type="number" id="mTotal" value="200" min="1" max="400"></div>
+        <div><label>Correct</label><input type="number" id="mCorrect" value="0" min="0" max="400"></div>
+        <div><label>Wrong</label><input type="number" id="mWrong" value="0" min="0" max="400"></div>
+      </div>
+      <label>Score (auto: 4×correct − 1×wrong — edit if the platform differs)</label>
+      <input type="number" id="mScore" value="0">
+      <label>Notes (optional)</label>
+      <input id="mNotes" placeholder="e.g. lost marks in GI image questions, sleepy after lunch">
+      <button class="btn" id="mSaveBtn">💾 Save test</button>
+      <button class="btn ghost hidden" id="mCancelEdit">Cancel edit</button>
+      <div class="statusline" id="mStatus"></div>
+      <p class="mini">Skipped is auto-calculated: total − correct − wrong. Switching Type resets Total (grand 200,
+        subject 100).</p>
+    </div>
+
+    <div class="card">
+      <h2>📈 Score trend (% of max marks)</h2>
+      <div id="chartScore"></div>
+    </div>
+    <div class="card">
+      <h2>🎯 Accuracy trend (on attempted)</h2>
+      <div id="chartAcc"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔬 Subject weak-spot radar</h2>
+      <div id="subjTable"></div>
+    </div>
+
+    <div class="card">
+      <h2>💡 Coach insights</h2>
+      <div id="insList"></div>
+    </div>
+
+    <div class="card">
+      <h2>📜 Test history</h2>
+      <div id="histList"></div>
+    </div>
+
+    <p class="mini">💡 Loop: subject test on QBank → log here → weakest subjects get more Syllabus weight → their errors
+      go to the Error Lab → fix cards do the rest.</p>
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/mock.js"></script>
+</body>
+
+</html>

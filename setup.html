@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Setup · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip">Setup</div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html">Cards</a><a
+      href="quiz.html">Quiz</a><a href="errors.html">Errors</a><a href="mock.html">Mocks</a><a
+      href="report.html">Report</a><a href="calendar.html">Calendar</a>
+    <a href="stats.html">Stats</a><a href="syllabus.html">Syllabus</a><a href="backup.html">Backup</a><a
+      href="setup.html" class="active">Edit Plan</a>
+  </nav>
+  <main>
+    <section class="card">
+      <h2>⚙️ Setup her plan</h2>
+      <label>Exam date (approx.)</label>
+      <input type="date" id="examDate">
+      <div class="row2">
+        <div><label>Day starts</label><input type="time" id="dayStart" value="07:00"></div>
+        <div><label>Day ends</label><input type="time" id="dayEnd" value="22:00"></div>
+      </div>
+      <label>Study hours per day</label>
+      <input type="number" id="hours" value="9" min="4" max="14">
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px">
+        <input type="checkbox" id="lightSunday" checked style="width:18px;height:18px">
+        <span style="font-size:14px">Lighter Sundays (weekly review + family time)</span>
+      </label>
+      <h3>Subjects — mark weakness (5 = weakest)</h3>
+      <div id="subjectList"></div>
+      <button class="btn" id="genBtn">✨ Generate My Timetable</button>
+      <div class="mini">Weak subjects get more days AND the freshest morning slot (Surgery is preset to weak 5).
+        Regenerating replaces the old plan.</div>
+    </section>
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/topics.js"></script>
+  <script src="js/planner.js"></script>
+  <script src="js/setup.js"></script>
+</body>
+
+</html>

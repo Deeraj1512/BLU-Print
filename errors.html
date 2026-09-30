@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Error Lab · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip" id="hchip"></div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html">Cards</a>
+    <a href="quiz.html">Quiz</a><a href="errors.html" class="active">Errors</a><a href="mock.html">Mocks</a><a
+      href="report.html">Report</a>
+    <a href="calendar.html">Calendar</a><a href="stats.html">Stats</a><a href="syllabus.html">Syllabus</a>
+    <a href="backup.html">Backup</a><a href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+    <div id="erStats"></div>
+    <div id="retestBanner"></div>
+    <div class="card">
+      <h2>🗂️ My error log</h2>
+      <div class="row2">
+        <div><label>Subject</label><select id="fSubj">
+            <option value="">All</option>
+          </select></div>
+        <div><label>Reason</label><select id="fReason">
+            <option value="">All</option>
+            <option value="concept">Didn't know</option>
+            <option value="forgot">Forgot</option>
+            <option value="silly">Silly mistake</option>
+            <option value="misread">Misread</option>
+          </select></div>
+      </div>
+      <label style="margin-top:8px">Status</label>
+      <select id="fStatus">
+        <option value="open">Open (not yet conquered)</option>
+        <option value="resolved">Resolved ✔</option>
+        <option value="">All</option>
+      </select>
+      <div id="erList" style="margin-top:10px"></div>
+    </div>
+    <p class="mini">💡 The rule: an error is only "conquered" when she re-answers it correctly <b>days later</b>. Each
+      error also planted a fix flashcard — the two systems hunt the same weak spots.</p>
+  </main>
+
+  <!-- RETEST RUNNER -->
+  <div class="overlay hidden" id="rtOverlay">
+    <div class="int-card" style="max-width:420px;text-align:left">
+      <div id="rtBody"></div>
+    </div>
+  </div>
+
+  <script src="js/core.js"></script>
+  <script src="js/errors.js"></script>
+</body>
+
+</html>

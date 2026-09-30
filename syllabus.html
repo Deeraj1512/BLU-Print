@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Syllabus · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip">Syllabus</div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html">Cards</a><a
+      href="quiz.html">Quiz</a><a href="errors.html">Errors</a><a href="mock.html">Mocks</a><a
+      href="report.html">Report</a><a href="calendar.html">Calendar</a>
+    <a href="stats.html">Stats</a><a href="syllabus.html" class="active">Syllabus</a>
+    <a href="backup.html">Backup</a><a href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+    <div class="card">
+      <label>Subject</label>
+      <select id="subjSelect"></select>
+      <div id="topicList" style="margin-top:12px"></div>
+      <button class="btn ghost small" id="addBtn" style="margin-top:10px">＋ Add topic</button>
+      <button class="btn" id="saveBtn">💾 Save this subject's topics</button>
+      <button class="btn ghost" id="resetBtn">↺ Restore built-in list</button>
+      <p class="mini">Change names, change weights (weight = number of deep-work sessions), add her professor's topic
+        order. After saving, regenerate the plan (Setup → Generate) so the timetable uses the new topics.</p>
+    </div>
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/topics.js"></script>
+  <script src="js/syllabus.js"></script>
+</body>
+
+</html>

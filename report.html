@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Weekly Report · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip" id="hchip"></div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html">Cards</a>
+    <a href="quiz.html">Quiz</a><a href="errors.html">Errors</a><a href="mock.html">Mocks</a><a href="report.html"
+      class="active">Report</a>
+    <a href="calendar.html">Calendar</a><a href="stats.html">Stats</a>
+    <a href="syllabus.html">Syllabus</a><a href="backup.html">Backup</a><a href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+
+    <div class="card">
+      <div class="weeknav">
+        <button class="btn small ghost" id="wPrev">←</button>
+        <b id="wLabel"></b>
+        <button class="btn small ghost" id="wNext">→</button>
+      </div>
+      <div class="statusline" id="wNote" style="text-align:center;margin-top:8px"></div>
+    </div>
+
+    <div id="bigStats"></div>
+
+    <div class="card">
+      <h2>📚 Study plan</h2>
+      <div id="planBody"></div>
+    </div>
+    <div class="card">
+      <h2>⏱ Focus &amp; distractions</h2>
+      <div id="focusBody"></div>
+    </div>
+    <div class="card">
+      <h2>🃏 Memory (flashcards)</h2>
+      <div id="cardsBody"></div>
+    </div>
+    <div class="card">
+      <h2>📝 Practice &amp; errors</h2>
+      <div id="prBody"></div>
+    </div>
+    <div class="card">
+      <h2>🏟 Mocks &amp; target</h2>
+      <div id="mockBody"></div>
+    </div>
+    <div class="card">
+      <h2>📖 Subjects touched</h2>
+      <div id="subjBody"></div>
+    </div>
+
+    <div class="card">
+      <h2>✅ Wins this week</h2>
+      <div id="winBody"></div>
+    </div>
+    <div class="card">
+      <h2>⚠️ Slipped</h2>
+      <div id="slipBody"></div>
+    </div>
+    <div class="card">
+      <h2>🎯 Next week's actions</h2>
+      <div id="actBody"></div>
+    </div>
+
+    <div class="card">
+      <h2>📣 Share this report</h2>
+      <p class="mini" style="margin-top:0">The Sunday ritual: copy the summary → send it on WhatsApp → talk through the
+        actions together. 10 minutes is enough.</p>
+      <div class="tools">
+        <button class="btn small" id="copyBtn">📋 Copy report</button>
+        <button class="btn small ghost" id="shareBtn">↗ Share…</button>
+      </div>
+      <div class="statusline" id="shStatus"></div>
+      <details class="boxdet" style="margin-top:10px">
+        <summary>🗣️ 3 questions to ask on the call</summary>
+        <p class="mini">1. Which topic felt hardest this week — is it in the Error Lab yet?<br>
+          2. What pulled you off plan most — interruptions, phone, or energy?<br>
+          3. What is the ONE fix for next week? (It becomes action #1.)</p>
+      </details>
+    </div>
+
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/report.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Focus · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip" id="hchip"></div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html" class="active">Focus</a><a href="flashcards.html">Cards</a><a
+      href="quiz.html">Quiz</a><a href="errors.html">Errors</a><a href="mock.html">Mocks</a><a
+      href="report.html">Report</a><a href="calendar.html">Calendar</a>
+    <a href="stats.html">Stats</a><a href="syllabus.html">Syllabus</a>
+    <a href="backup.html">Backup</a><a href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+    <div id="studio">
+      <div id="weekStats"></div>
+      <div class="card">
+        <h2>🎯 Today's sessions</h2>
+        <div id="sessList"></div>
+      </div>
+      <div class="card">
+        <h2>⚡ Custom sprint</h2>
+        <p class="mini" style="margin-top:0">A quick focused burst — perfect for flashcards or one-liners.</p>
+        <div class="tools">
+          <button class="btn small ghost sprintBtn" data-min="25">25 min</button>
+          <button class="btn small ghost sprintBtn" data-min="45">45 min</button>
+          <button class="btn small ghost sprintBtn" data-min="60">60 min</button>
+          <button class="btn small ghost sprintBtn" data-min="90">90 min</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>📜 Recent sessions</h2>
+        <div id="recentList"></div>
+      </div>
+      <p class="mini">💡 How to use: sit down → tap ▶ Start → keep the screen where family can see it. When someone
+        comes, point at the countdown — "I'm free at 1:00!" If you still get pulled into a chat, tap "✋ I was
+        interrupted" afterwards. The weekly numbers show whether it's working.</p>
+    </div>
+
+    <div class="card hidden" id="doneCard">
+      <div id="doneBody"></div>
+      <button class="btn ghost" id="doneOk">Back to Focus Studio</button>
+    </div>
+  </main>
+
+  <!-- FULLSCREEN DND SCREEN (family-facing) -->
+  <div id="dnd" class="hidden">
+    <div class="dnd-top">⏳ FOCUS MODE — DO NOT DISTURB</div>
+    <div class="dnd-topic" id="dndTopic"></div>
+    <div class="dnd-time" id="dndTime">--:--</div>
+    <div class="dnd-until" id="dndUntil"></div>
+    <div class="dnd-msg">Family &amp; friends: she is deep in study right now.<br>Please talk to her at the break —
+      she'll be all ears then 💜</div>
+    <div class="dnd-btns">
+      <button id="intBtn">✋ I was interrupted</button>
+      <button id="pauseBtn">⏸ Pause</button>
+      <button id="endBtn">■ End session</button>
+    </div>
+    <div class="dnd-paused hidden" id="dndPause">PAUSED</div>
+  </div>
+
+  <!-- interruption duration chooser -->
+  <div class="overlay hidden" id="intChoose">
+    <div class="int-card">
+      <h2>✋ Interrupted</h2>
+      <p class="mini" style="margin-top:2px">Roughly how long did it take?</p>
+      <button class="intOpt" data-min="5">~5 minutes</button>
+      <button class="intOpt" data-min="15">~15 minutes</button>
+      <button class="intOpt" data-min="30">~30 minutes</button>
+      <button class="intOpt" data-min="45">45+ minutes</button>
+      <button class="cancel" id="intCancel">cancel</button>
+    </div>
+  </div>
+
+  <!-- phone ritual (before every session) -->
+  <div class="overlay hidden" id="ritual">
+    <div class="int-card">
+      <h2>Before we start 📱</h2>
+      <p class="mini" style="margin-top:2px">Is your phone in another room (or far from you)?</p>
+      <button id="ritYes">Yes, it's away ✅</button>
+      <button id="ritNo">No, starting anyway</button>
+    </div>
+  </div>
+
+  <script src="js/core.js"></script>
+  <script src="js/focus.js"></script>
+</body>
+
+</html>

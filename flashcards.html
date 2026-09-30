@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cards · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip" id="hchip"></div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html" class="active">Cards</a><a
+      href="quiz.html">Quiz</a><a href="errors.html">Errors</a><a href="mock.html">Mocks</a><a
+      href="report.html">Report</a>
+    <a href="calendar.html">Calendar</a><a href="stats.html">Stats</a><a href="syllabus.html">Syllabus</a>
+    <a href="backup.html">Backup</a><a href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+    <div id="fcMain">
+
+      <div id="overview"></div>
+
+      <div class="card">
+        <h2>🪄 Import notes → make flashcards</h2>
+        <p class="mini" style="margin-top:0">1 Import → 2 AI generates → 3 she verifies → 4 spaced repetition remembers.
+        </p>
+        <label>Subject</label>
+        <select id="gSubj"></select>
+        <label>Topic (optional)</label>
+        <input id="gTopic" placeholder="e.g. GI &amp; hepatobiliary surgery">
+        <label>How many cards?</label>
+        <select id="gCount">
+          <option value="10">10</option>
+          <option value="15" selected>15</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+        <label>Paste notes text (or use a file below)</label>
+        <textarea id="gText" rows="4"
+          style="width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:#fafbff;resize:vertical"></textarea>
+        <label>…or a file: photo of notes 📷 / PDF / .txt</label>
+        <input type="file" id="gFile" accept="image/*,.pdf,.txt,.md">
+        <div class="mini" id="gFileNote"></div>
+        <button class="btn" id="genBtn">✨ Generate flashcards with AI</button>
+        <div class="statusline" id="genStatus"></div>
+        <p class="mini">Printed or neat handwritten photos work. Word (.docx)? Paste the text instead. Very large PDF?
+          Split it.</p>
+      </div>
+
+      <div class="card hidden" id="verifyCard">
+        <h2>🕵️ Verify before adding — this is revision too!</h2>
+        <div class="statusline" id="verifyHead"></div>
+        <div id="verifyList"></div>
+        <div class="tools">
+          <button class="btn small ghost" id="allYes">Accept all</button>
+          <button class="btn small ghost" id="allNo">Reject all</button>
+        </div>
+        <button class="btn" id="addBtn">➕ Add accepted cards</button>
+      </div>
+
+      <details class="boxdet">
+        <summary>➕ Make a card manually (image cards: instruments, X-rays, signs)</summary>
+        <label>Subject</label><select id="mSubj"></select>
+        <label>Topic</label><input id="mTopic">
+        <label>Front (question)</label><textarea id="mFront" rows="2"
+          style="width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:#fafbff;resize:vertical"></textarea>
+        <label>Back (answer)</label><textarea id="mBack" rows="2"
+          style="width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:#fafbff;resize:vertical"></textarea>
+        <label>Optional image (shows on the front)</label>
+        <input type="file" id="mImg" accept="image/*">
+        <div id="fcImgPrev"></div>
+        <button class="btn" id="mSave">Save card</button>
+      </details>
+
+      <details class="boxdet">
+        <summary>📚 Browse &amp; edit collection (<span id="colCount">0</span> cards)</summary>
+        <div class="row2">
+          <div><label>Search</label><input id="bSearch" placeholder="search text…"></div>
+          <div><label>Subject</label><select id="bSubj">
+              <option value="">All subjects</option>
+            </select></div>
+        </div>
+        <div id="browseList" style="margin-top:10px"></div>
+      </details>
+
+      <details class="boxdet" id="aiDet">
+        <summary>⚙️ AI settings (one-time setup)</summary>
+        <p class="mini">1. Open <b>aistudio.google.com/app/apikey</b> → sign in with a Google account → <b>Create API
+            key</b> → copy it.<br>
+          2. Paste below and Save. The key lives only in her browser; requests go directly from the browser to Google.
+          The free tier is plenty for one student.</p>
+        <label>Gemini API key</label>
+        <input id="aiKey" type="password" placeholder="paste the key here">
+        <label>Model</label>
+        <input id="aiModel" placeholder="gemini-2.0-flash">
+        <div class="tools">
+          <button class="btn small ghost" id="aiSave">Save</button>
+          <button class="btn small ghost" id="aiTest">Test key</button>
+        </div>
+        <div class="statusline" id="aiStatus"></div>
+        <div class="statusline" id="storeInfo"></div>
+      </details>
+
+    </div>
+
+    <!-- REVIEW SCREEN -->
+    <div id="review" class="hidden">
+      <div class="rv-wrap">
+        <div class="rv-top"><span id="rvSubj"></span><span id="rvCount"></span></div>
+        <div class="pbar">
+          <div id="rvBar" style="width:0%"></div>
+        </div>
+        <div id="rvImg"></div>
+        <div id="rvFront" class="rv-face"></div>
+        <div id="rvBack" class="rv-face back hidden"></div>
+        <button class="btn" id="flipBtn">Show answer</button>
+        <div id="rateRow" class="hidden">
+          <button class="rate r0" data-r="0"></button><button class="rate r1" data-r="1"></button>
+          <button class="rate r2" data-r="2"></button><button class="rate r3" data-r="3"></button>
+        </div>
+        <div class="tools"><button class="btn small ghost" id="quitBtn">End session</button></div>
+        <div id="rvDone" class="card hidden" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/flashcards.js"></script>
+</body>
+
+</html>

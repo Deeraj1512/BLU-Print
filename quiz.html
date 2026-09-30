@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Quiz · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip" id="hchip"></div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html">Cards</a>
+    <a href="quiz.html" class="active">Quiz</a><a href="errors.html">Errors</a><a href="mock.html">Mocks</a><a
+      href="report.html">Report</a>
+    <a href="calendar.html">Calendar</a><a href="stats.html">Stats</a><a href="syllabus.html">Syllabus</a>
+    <a href="backup.html">Backup</a><a href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+    <div id="qzMain">
+
+      <div id="dueHint"></div>
+
+      <div class="card">
+        <h2>⚡ Quick drill — from a topic</h2>
+        <p class="mini" style="margin-top:0">AI writes fresh MCQs on any syllabus topic. Perfect after finishing a
+          topic.</p>
+        <label>Subject</label><select id="dSubj"></select>
+        <label>Topic</label><select id="dTopic"></select>
+        <div class="row2">
+          <div><label>Questions</label>
+            <select id="dCount">
+              <option>10</option>
+              <option selected>20</option>
+              <option>30</option>
+              <option>50</option>
+            </select>
+          </div>
+          <div><label>Mode</label>
+            <select id="dMode">
+              <option value="practice">Practice (instant feedback)</option>
+              <option value="test">Test (timed, +4/−1)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" id="dStart">🚀 Generate &amp; start</button>
+        <button class="btn ghost" id="weakBtn" style="margin-top:8px">🎯 Weakest-subject 10Q drill</button>
+        <div class="statusline" id="dStatus"></div>
+      </div>
+
+      <div class="card">
+        <h2>📄 Quiz from her notes</h2>
+        <p class="mini" style="margin-top:0">Upload the professor's latest notes (photo 📷 / PDF / .txt) or paste text —
+          the AI turns THEM into exam questions.</p>
+        <label>Subject</label><select id="nSubj"></select>
+        <label>Topic (optional)</label><input id="nTopic" placeholder="e.g. GI &amp; hepatobiliary surgery">
+        <div class="row2">
+          <div><label>Questions</label>
+            <select id="nCount">
+              <option>10</option>
+              <option selected>20</option>
+              <option>30</option>
+            </select>
+          </div>
+          <div><label>Mode</label>
+            <select id="nMode">
+              <option value="practice">Practice</option>
+              <option value="test">Test (timed)</option>
+            </select>
+          </div>
+        </div>
+        <label>Paste notes text (or use a file below)</label>
+        <textarea id="nText" rows="4"
+          style="width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;font-size:14px;background:#fafbff;resize:vertical"></textarea>
+        <label>…or a file</label>
+        <input type="file" id="nFile" accept="image/*,.pdf,.txt,.md">
+        <div class="mini" id="nFileNote"></div>
+        <button class="btn" id="nStart">🚀 Generate &amp; start</button>
+        <div class="statusline" id="nStatus"></div>
+      </div>
+
+      <div class="card">
+        <h2>📜 Recent quizzes</h2>
+        <div id="histList"></div>
+      </div>
+
+      <p class="mini">💡 Daily loop: study the morning topic → its 10Q drill here → wrong answers auto-flow to the Error
+        Lab → fix cards come back in 3 days.</p>
+    </div>
+
+    <!-- ===== QUIZ SCREEN ===== -->
+    <div id="qzScreen" class="hidden">
+      <div class="qzbar">
+        <div class="qb-l"><b id="qzTitle"></b><span id="qzSub" class="qb-s"></span></div>
+        <div class="qb-r"><span class="qchip" id="qzTimer"></span><span class="qchip" id="qzScore"></span>
+          <button id="qzExit">✕</button>
+        </div>
+      </div>
+      <div class="qzwrap">
+        <div class="pbar" style="margin:10px 0">
+          <div id="qzBar" style="width:0%"></div>
+        </div>
+        <div id="palette" class="hidden"></div>
+        <div class="card qcard">
+          <div class="qnum" id="qzNum"></div>
+          <div class="qtext" id="qzQ"></div>
+          <div id="qzOpts"></div>
+          <div id="qzExpl" class="hidden"></div>
+          <div class="tools" id="qzNavBtns">
+            <button class="btn small ghost" id="prevBtn">← Prev</button>
+            <button class="btn small ghost" id="palBtn">▦ Palette</button>
+            <button class="btn small" id="nextBtn">Next →</button>
+          </div>
+          <button class="btn hidden" id="submitBtn">✅ Submit test</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RESULTS ===== -->
+    <div id="qzResults" class="hidden">
+      <div id="resSummary"></div>
+      <div class="card" id="saveErrCard">
+        <h2>📥 Wrong answers → Error Lab</h2>
+        <p class="mini" style="margin-top:0">Choose a reason for each mistake (defaults to "Didn't know"). Then send
+          them — each becomes an error entry + a fix flashcard due in 3 days.</p>
+        <button class="btn" id="sendErrBtn">📥 Send all to Error Lab</button>
+      </div>
+      <div class="card">
+        <h2>🔍 Question review</h2>
+        <div id="resList"></div>
+      </div>
+      <button class="btn ghost" id="resDone">Back to Quiz home</button>
+    </div>
+
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/topics.js"></script>
+  <script src="js/quiz.js"></script>
+</body>
+
+</html>

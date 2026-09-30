@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Backup · BLU-Print</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <div><b>BLU-Print</b>
+      <div class="hsub">One app. One goal. 🩺</div>
+    </div>
+    <div class="chip" id="hchip"></div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Today</a><a href="focus.html">Focus</a><a href="flashcards.html">Cards</a><a
+      href="quiz.html">Quiz</a><a href="errors.html">Errors</a><a href="mock.html">Mocks</a><a
+      href="report.html">Report</a><a href="calendar.html">Calendar</a>
+    <a href="stats.html">Stats</a><a href="syllabus.html">Syllabus</a><a href="backup.html" class="active">Backup</a><a
+      href="setup.html">Edit Plan</a>
+  </nav>
+  <main>
+    <div class="card" id="infoBody"></div>
+    <div class="card">
+      <h2>⬇ Take a backup</h2>
+      <p class="mini">Downloads a small file. Do this every Sunday and send it to your brother on WhatsApp as a safety
+        copy.</p>
+      <button class="btn" id="expBtn">⬇ Download backup file</button>
+    </div>
+    <div class="card">
+      <h2>⬆ Restore from backup</h2>
+      <p class="mini">Use this on a new phone or after clearing browser data.</p>
+      <button class="btn ghost" id="impBtn" onclick="document.getElementById('impFile').click()">⬆ Choose backup
+        file</button>
+      <input type="file" id="impFile" accept=".json" class="hidden">
+    </div>
+    <div class="danger">
+      <b>⚠️ Danger zone</b>
+      <p class="mini">Deletes the plan and all ticks. Cannot be undone.</p>
+      <button class="dzbtn" id="resetBtn">Delete everything</button>
+    </div>
+  </main>
+  <script src="js/core.js"></script>
+  <script src="js/backup.js"></script>
+</body>
+
+</html>
