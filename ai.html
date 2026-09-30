@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI · BLU-Print</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main>
+  <div class="card"><h2>🤖 AI engine</h2><div id="aiSummary"></div></div>
+
+  <div class="card">
+    <h2>🔑 Primary key</h2>
+    <label>API key</label><input id="aiKey1" type="password" placeholder="paste primary key">
+    <label>Provider (pick manually only for Mistral)</label><select id="aiProv1"></select>
+    <label>Model — leave EMPTY unless told otherwise</label><input id="aiModel1" placeholder="default per provider">
+    <button class="btn small ghost" id="test1Btn" style="margin-top:10px">🧪 Test primary key</button>
+  </div>
+
+  <div class="card">
+    <h2>🛟 Backup key (recommended)</h2>
+    <p class="mini" style="margin-top:0">A second provider from a different company. When the primary is busy, generation continues here automatically.</p>
+    <label>API key</label><input id="aiKey2" type="password" placeholder="paste backup key">
+    <label>Provider</label><select id="aiProv2"></select>
+    <label>Model — leave EMPTY</label><input id="aiModel2" placeholder="default per provider">
+    <button class="btn small ghost" id="test2Btn" style="margin-top:10px">🧪 Test backup key</button>
+  </div>
+
+  <div class="card">
+    <button class="btn" id="saveBtn">💾 Save AI settings</button>
+    <div class="statusline" id="aiStatus"></div>
+    <div id="backLinks" class="hidden">
+      <p class="mini">Saved ✅ — go generate something:</p>
+      <div class="tools">
+        <a class="btn small" style="text-decoration:none;text-align:center" href="flashcards.html">🃏 Cards</a>
+        <a class="btn small" style="text-decoration:none;text-align:center" href="quiz.html">📝 Quiz</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Free providers cheat-sheet</h2>
+    <div id="provInfo"></div>
+    <p class="mini">Keys are free at each provider's console. Prefer 10–15 question/card batches on free tiers. Photos of notes work on most providers; PDF files only on Gemini — with others, paste the text or send photos.</p>
+  </div>
+</main>
+<script src="js/core.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/aisettings.js"></script>
+</body>
+</html>

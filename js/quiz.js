@@ -49,14 +49,7 @@ function parseMCQs(txt) {
   return out;
 }
 async function callAI(parts) {
-  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"
-    + (state.ai.model || "gemini-2.0-flash") + ":generateContent?key=" + encodeURIComponent(state.ai.key), {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents: [{ role: "user", parts: parts }], generationConfig: { temperature: 0.35, responseMimeType: "application/json" } })
-  });
-  const d = await res.json();
-  if (!res.ok) throw new Error((d.error && d.error.message) || ("API error " + res.status));
-  return (((d.candidates || [])[0] || { content: { parts: [] } }).content.parts || []).map(p => p.text || "").join("");
+  return aiGenerate(parts, 0.35);
 }
 async function buildParts(subj, topic, n, notesText, file) {
   const parts = []; let mediaNote = "", textMat = notesText || "";
@@ -95,7 +88,7 @@ function startQuiz(subj, topic, mode, questions) {
 }
 async function generate(src) {
   const pre = src === "drill" ? $("dStatus") : $("nStatus");
-  if (!state.ai.key) { alert("Add your free Gemini API key first — Cards page → ⚙️ AI settings."); location.href = "flashcards.html"; return; }
+  if (!state.ai.key) { alert("No AI key yet — one-time setup on the AI page."); location.href = "ai.html"; return; }
   try {
     let subj, topic, mode, n, notes = "", file = null;
     if (src === "drill") {
@@ -175,10 +168,13 @@ function renderQ() {
       + '<p class="expt">' + esc(qu.explanation) + '</p>' + (qu.point ? '<p class="exp">💡 ' + esc(qu.point) + '</p>' : "");
     ex.classList.remove("hidden");
   } else ex.classList.add("hidden");
-  /* footer buttons */
-  $("prevBtn").style.visibility = q.mode === "test" && i > 0 ? "visible" : "hidden";
-  $("nextBtn").style.visibility = q.mode === "test" && i < q.questions.length - 1 ? "visible" : "hidden";
-  $("submitBtn").classList.toggle("hidden", q.mode !== "test");
+  /* footer buttons — both modes: Prev/Next always, Finish always visible */
+  const last = i === q.questions.length - 1;
+  $("prevBtn").style.visibility = i > 0 ? "visible" : "hidden";
+  $("nextBtn").style.visibility = last ? "hidden" : "visible";
+  $("nextBtn").textContent = q.mode === "practice" ? "Next / skip →" : "Next →";
+  $("submitBtn").textContent = q.mode === "test" ? "✅ Submit test" : "✅ Finish quiz";
+  $("submitBtn").classList.remove("hidden");
   renderPalette();
 }
 function renderPalette() {
@@ -196,7 +192,9 @@ function renderPalette() {
 /* ---------- finish & results ---------- */
 function finishQuiz(auto) {
   const q = state.activeQuiz; if (!q) return;
-  if (!auto && q.mode === "test" && !confirm("Submit the test and see results?")) return;
+  if (!auto && !confirm(q.mode === "test"
+    ? "Submit the test and see results?"
+    : "Finish the quiz and see results? Unanswered questions count as skipped.")) return;
   if (T) { clearInterval(T); T = null; }
   let c = 0, w = 0, s = 0;
   q.answers.forEach((a, i) => { if (a === q.questions[i].answer) c++; else if (a !== null) w++; else s++; });
