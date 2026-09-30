@@ -49,14 +49,7 @@ function parseMCQs(txt) {
   return out;
 }
 async function callAI(parts) {
-  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"
-    + (state.ai.model || "gemini-2.0-flash") + ":generateContent?key=" + encodeURIComponent(state.ai.key), {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents: [{ role: "user", parts: parts }], generationConfig: { temperature: 0.35, responseMimeType: "application/json" } })
-  });
-  const d = await res.json();
-  if (!res.ok) throw new Error((d.error && d.error.message) || ("API error " + res.status));
-  return (((d.candidates || [])[0] || { content: { parts: [] } }).content.parts || []).map(p => p.text || "").join("");
+  return aiGenerate(parts, 0.35);
 }
 async function buildParts(subj, topic, n, notesText, file) {
   const parts = []; let mediaNote = "", textMat = notesText || "";

@@ -183,17 +183,7 @@ async function doGenerate() {
         + (textMat ? "\n\nNOTES MATERIAL:\n" + textMat.slice(0, 150000) : "")
     });
 
-    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"
-      + (state.ai.model || "gemini-2.0-flash") + ":generateContent?key=" + encodeURIComponent(state.ai.key), {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: parts }],
-        generationConfig: { temperature: 0.4, responseMimeType: "application/json" }
-      })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error((data.error && data.error.message) || ("API error " + res.status));
-    const txt = (((data.candidates || [])[0] || { content: { parts: [] } }).content.parts || []).map(p => p.text || "").join("");
+    const txt = await aiGenerate(parts, 0.4);
     proposed = parseCardList(txt).slice(0, 40);
     if (!proposed.length) throw new Error("The AI returned no usable cards. Raw reply: " + txt.slice(0, 180));
     propSubj = subj; propTopic = topic;
@@ -331,17 +321,16 @@ function aiSave() {
   save(); $("aiStatus").textContent = "Saved ✅"; renderStoreInfo();
 }
 async function aiTest() {
-  const k = $("aiKey").value.trim(), m = $("aiModel").value.trim() || "gemini-2.0-flash";
+  const k = $("aiKey").value.trim(), m = $("aiModel").value.trim();
   if (!k) { $("aiStatus").textContent = "Paste the key first."; return; }
   $("aiStatus").textContent = "Testing…";
   try {
-    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + m + ":generateContent?key=" + encodeURIComponent(k), {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "Reply with just: OK" }] }] })
-    });
-    const d = await res.json();
-    $("aiStatus").textContent = res.ok ? "Key works ✅" : "⚠ " + ((d.error && d.error.message) || ("error " + res.status));
-  } catch (e) { $("aiStatus").textContent = "⚠ Network error."; }
+    const ok = state.ai.key, om = state.ai.model;
+    state.ai.key = k; state.ai.model = m;
+    await aiGenerate([{ text: "Reply with just: OK" }], 0);
+    state.ai.key = ok; state.ai.model = om;
+    $("aiStatus").textContent = "Key works ✅ — provider: " + aiDetect(k);
+  } catch (e) { $("aiStatus").textContent = "⚠ " + (e.message || e); }
 }
 
 /* ---------- boot ---------- */
