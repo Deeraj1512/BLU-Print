@@ -1,2 +1,0 @@
-# BLU-Print
-Neet PG
