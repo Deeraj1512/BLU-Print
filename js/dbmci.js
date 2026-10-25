@@ -363,8 +363,8 @@
       title = day.ex;
       subtitle = day.t === 'gt' ? 'Grand Test day — 8:00 exam · 13:00 discussion'
         : day.t === 'cts' ? 'Cumulative Test day — 8:00 exam · 13:00 discussion'
-        : day.t === 'inicet' ? 'INICET — the real thing. Go get it'
-        : 'T&D exam day — 8:00 exam · 13:00 discussion';
+          : day.t === 'inicet' ? 'INICET — the real thing. Go get it'
+            : 'T&D exam day — 8:00 exam · 13:00 discussion';
       items = itemsExam(day, iso);
     } else if (day) {
       type = 'subject';
