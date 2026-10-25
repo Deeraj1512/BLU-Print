@@ -1,5 +1,5 @@
 /* ============================================================
-   BLU-Print — js/dbmci.js  (v3.1 — 2026-10-25)
+   BLU-Print — js/dbmci.js  (v3.2 — 2026-10-25)
    ------------------------------------------------------------
    College timetable module · DBMCI OTO Mentorship
    Source: "UPDATED REVISION SCHEDULE.pdf" (16 Oct 2026 - 16 Jan 2027, 93 days)
@@ -22,12 +22,25 @@
      lights out 22:30. All labels in English, matching the handwritten sheet.
    - College exam days (T&D / GT / CTS / INICET): 8:00-12:00 exam + 13:00
      discussion automatically replace the morning slots.
+
+   Changes vs v3.1 (THE MISSING LINK):
+   - The Today page (index.html + today.js) renders the plan stored in the
+     browser (state.plan) — it NEVER reads this file directly. The plan was
+     loaded once from the OLD timetable, so uploading v3.1 alone changed
+     nothing on screen.
+   - v3.2 wires the "Load institute timetable (DBMCI)" button on the Edit
+     Plan page (setup.html #dbmciBtn): one click rebuilds state.plan from
+     this new 93-day schedule + the handwritten routine, in the exact
+     format planner.js uses: { date, phase, tag, sessions:[{time, dur,
+     label, kind, done, subject}] } with kinds study/meal/break.
+   - Past days and their ticks are KEPT (streak & history safe) — only
+     today onward is replaced.
    ============================================================ */
 
 (function () {
   'use strict';
 
-  var VERSION = '3.1';
+  var VERSION = '3.2';
   var SCHEDULE_START = '2026-10-16';
   var SCHEDULE_END = '2027-01-16';
   /* NEET PG 2027 exam date (only used for the countdown — update this one
@@ -457,4 +470,141 @@
   window.DBMCI_nextExam = nextExam;
   window.DBMCI_countdown = countdown;
   window.DBMCI_VERSION = VERSION;
+
+  /* ------------------------------------------------------------
+     6) App-plan loader — THE BRIDGE into the app.
+        The Today page renders state.plan (browser storage), which is
+        loaded via the "Load institute timetable (DBMCI)" button on the
+        Edit Plan page (setup.html). This section converts the 93-day
+        schedule + handwritten routine into the exact format planner.js
+        uses and installs the button click handler.
+        Session shape: { time:'HH:MM', dur, label, kind:'study'|'meal'|'break',
+        done, subject }   Day shape: { date, phase, tag, sessions }
+     ------------------------------------------------------------ */
+  function minsBetween(a, b) {
+    if (!a || !b) return 0;
+    var p = a.split(':'), q = b.split(':');
+    return (+q[0] * 60 + +q[1]) - (+p[0] * 60 + +p[1]);
+  }
+
+  function appKind(title, kind) {
+    if (kind === 'exam') return 'study';   /* college exams are tickable */
+    if (title === 'Breakfast' || title === 'Breakfast (early)' ||
+      title === 'Lunch' || title === 'Lunch + Relax') return 'meal';
+    if (title === 'Fresh Up' || title === 'Break' ||
+      title === 'Head Home & Rest' || title === 'Lights Out') return 'break';
+    return 'study';
+  }
+
+  function trimTxt(s, n) {
+    s = String(s || '').trim();
+    if (s.length <= n) return s;
+    return s.slice(0, n - 1).replace(/[,\s]+$/, '') + '…';
+  }
+
+  function planTag(day) {
+    if (!day) return 'Self-Study';
+    if (day.t === 'subject') return day.s;
+    if (day.t === 'td') return 'T&D Exam';
+    if (day.t === 'gt') return 'Grand Test';
+    if (day.t === 'cts') return 'CTS';
+    if (day.t === 'inicet') return 'INICET';
+    return 'Catch-up';
+  }
+
+  function subjectFor(title, day, iso) {
+    if (title.indexOf('Study Block') === 0) return (day && day.s) || '';
+    if (title === 'Pre-Exam Rapid Review' ||
+      title.indexOf('Discussion Mistake Review') === 0) {
+      return contextSubject(iso) || '';
+    }
+    return '';
+  }
+
+  /* One app-format plan day */
+  function buildAppDay(day, iso) {
+    var plan = getDayPlan(iso);
+    var topics = (day && day.top) ? day.top : '';
+    var firstBlock = true;
+    var sessions = plan.items.map(function (m) {
+      var kind = appKind(m.title, m.kind);
+      var label = m.title;
+      if (m.title.indexOf('Study Block') === 0 && firstBlock && topics) {
+        label += ' — ' + trimTxt(topics, 60);
+      }
+      if (m.title.indexOf('Study Block') === 0) firstBlock = false;
+      if (m.title === 'Backlog') {
+        label += iso <= '2026-10-31' ? ' (September backlog)' : ' (weakest subject)';
+      }
+      var dur = m.mins || minsBetween(m.start, m.end);
+      if (m.title === 'Lights Out') dur = 0;
+      var sess = { time: m.start, dur: dur, label: label, kind: kind };
+      if (kind === 'study') { sess.done = false; sess.subject = subjectFor(m.title, day, iso); }
+      return sess;
+    });
+    return { date: iso, phase: 1, tag: planTag(day), sessions: sessions };
+  }
+
+  /* All 93 days in app format */
+  function buildAllAppDays() {
+    return DBMCI_DAYS.map(function (e) { return buildAppDay(e, e.d); });
+  }
+
+  /* Merge-load: keep every past day (with its ticks), replace today onward */
+  function loadNewPlan() {
+    var t = (typeof todayStr === 'function') ? todayStr() : (function () {
+      var n = new Date();
+      return n.getFullYear() + '-' + pad(n.getMonth() + 1) + '-' + pad(n.getDate());
+    })();
+    var hasCore = (typeof state !== 'undefined') && (typeof save === 'function');
+    var fresh = buildAllAppDays().filter(function (p) { return p.date >= t; });
+    var old = (hasCore && state && state.plan) ? state.plan : [];
+    var kept = old.filter(function (p) { return p.date < t; });
+    if (hasCore) {
+      if (!state) {
+        state = {
+          cfg: {
+            examDate: NEET_PG_DATE, dayStart: '06:00', dayEnd: '22:30',
+            hours: 9, lightSunday: false, subjects: null
+          }, extras: {}
+        };
+      }
+      state.plan = kept.concat(fresh);
+      if (!state.extras) state.extras = {};
+      state.planV = 'dbmci-' + VERSION;
+      save();
+    }
+    return {
+      kept: kept.length, added: fresh.length,
+      first: fresh.length ? fresh[0].date : '',
+      last: fresh.length ? fresh[fresh.length - 1].date : ''
+    };
+  }
+
+  function wireSetupButton() {
+    if (typeof document === 'undefined') return;
+    var btn = document.getElementById('dbmciBtn');
+    if (!btn || btn.__dbmciWired) return;
+    btn.__dbmciWired = true;
+    btn.onclick = function () {
+      if (typeof state === 'undefined' || typeof save !== 'function') {
+        alert('Please open this page from the app (sidebar → Edit Plan).');
+        return;
+      }
+      if (!confirm('Load the NEW college timetable (16 Oct 2026 → 16 Jan 2027) with the handwritten daily routine?\n\n• Past days and their ticks are kept (streak safe)\n• Today onward is replaced by the new plan\n\nTip: take a Backup first (sidebar → Backup).')) return;
+      var r = loadNewPlan();
+      if (!r.added) {
+        alert('Nothing to load — the college schedule (16 Oct 2026 → 16 Jan 2027) has already ended.');
+        return;
+      }
+      alert('New plan loaded ✅\n\n' + r.added + ' days: ' + r.first + ' → ' + r.last + '\nPast days kept: ' + r.kept);
+      location.href = 'index.html';
+    };
+  }
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireSetupButton);
+    else wireSetupButton();
+  }
+  window.DBMCI_loadNewPlan = loadNewPlan;   /* debug helper */
 })();
